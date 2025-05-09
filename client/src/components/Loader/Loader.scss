@@ -1,0 +1,24 @@
+.loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    color: #e50914;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .loader-container {
+    background: rgba(0, 0, 0, 0.9);
+  }
+}

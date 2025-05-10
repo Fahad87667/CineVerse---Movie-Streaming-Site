@@ -102,7 +102,7 @@ const NavigationBar = () => {
                     </span>
                   </div>
                   <div className="dropdown-divider"></div>
-                  <button className="btn dropdown-item" onClick={handleLogout}>
+                  <button id="signout" className="btn dropdown-item" onClick={handleLogout}>
                     Sign Out
                   </button>
                 </div>

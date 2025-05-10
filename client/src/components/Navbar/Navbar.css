@@ -117,6 +117,16 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+#signout {
+  padding-left: 10px;
+}
+
+#signout:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ff0000;
+  transition: all 0.3s ease;
+}
+
 @media (max-width: 768px) {
   .navbar {
     padding: 1rem 2rem;

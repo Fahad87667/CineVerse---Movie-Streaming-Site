@@ -1,5 +1,5 @@
 .aboutus-container {
-  max-width: 700px;
+  max-width: 1200px;
   margin: 40px auto 0 auto;
   padding: 32px 24px;
   background: #181818;
@@ -19,15 +19,18 @@
 
 .aboutus-desc {
   font-size: 1.1rem;
-  margin-bottom: 32px;
+  margin-bottom: 48px;
   color: #ccc;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .aboutus-devs {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  padding: 0 16px;
 }
 
 .aboutus-dev {
@@ -36,34 +39,101 @@
   align-items: center;
   background: #232323;
   border-radius: 16px;
-  padding: 24px 18px 16px 18px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  min-width: 160px;
+  padding: 32px 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.aboutus-dev-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .aboutus-photo {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   border: 4px solid #e50914;
   object-fit: cover;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   background: #fff;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 .aboutus-name {
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   font-weight: 600;
   color: #fff;
-  margin-top: 4px;
+  margin-bottom: 8px;
 }
 
-@media (max-width: 600px) {
+.aboutus-role {
+  font-size: 1rem;
+  color: #e50914;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.aboutus-description {
+  font-size: 0.95rem;
+  color: #ccc;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.aboutus-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.skill-tag {
+  background: rgba(229, 9, 20, 0.1);
+  color: #e50914;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(229, 9, 20, 0.3);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(229, 9, 20, 0.2);
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 1024px) {
   .aboutus-devs {
-    flex-direction: column;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .aboutus-devs {
+    grid-template-columns: 1fr;
     gap: 24px;
   }
+
   .aboutus-container {
-    padding: 18px 4px;
+    padding: 24px 16px;
+  }
+
+  .aboutus-dev {
+    padding: 24px 16px;
   }
 }

@@ -3,15 +3,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import { login, clearError } from "../store/Slice/auth-slice";
+import { toast } from "react-hot-toast";
+import "./Login.css";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
   const [validated, setValidated] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, status, error } = useSelector((state) => state.auth);
+
+  // Regex patterns
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/;
 
   useEffect(() => {
     if (user) {
@@ -22,17 +31,57 @@ const Login = () => {
     };
   }, [user, navigate, dispatch]);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
+  const validateForm = () => {
+    const newErrors = {};
 
-    if (form.checkValidity() === false) {
-      event.stopPropagation();
-      setValidated(true);
+    // Email validation
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!emailPattern.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (!passwordPattern.test(formData.password)) {
+      newErrors.password =
+        "Password must be at least 6 characters long and contain both letters and numbers";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setValidated(true);
+
+    if (!validateForm()) {
       return;
     }
 
-    dispatch(login({ email, password }));
+    try {
+      await dispatch(login(formData)).unwrap();
+      navigate("/");
+    } catch (error) {
+      toast.error(error.message || "Login failed");
+    }
   };
 
   return (
@@ -47,29 +96,37 @@ const Login = () => {
                 <Form.Label>Email address</Form.Label>
                 <Form.Control
                   type="email"
+                  name="email"
                   placeholder="Enter email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={errors.email ? "error" : ""}
                   required
                 />
-                <Form.Control.Feedback type="invalid">
-                  Please enter a valid email address.
-                </Form.Control.Feedback>
+                {errors.email && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.email}
+                  </Form.Control.Feedback>
+                )}
               </Form.Group>
 
               <Form.Group className="mb-3">
                 <Form.Label>Password</Form.Label>
                 <Form.Control
                   type="password"
+                  name="password"
                   placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={errors.password ? "error" : ""}
                   required
                   minLength={6}
                 />
-                <Form.Control.Feedback type="invalid">
-                  Password must be at least 6 characters long.
-                </Form.Control.Feedback>
+                {errors.password && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.password}
+                  </Form.Control.Feedback>
+                )}
               </Form.Group>
 
               <Button

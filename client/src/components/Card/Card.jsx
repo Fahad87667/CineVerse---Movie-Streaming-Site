@@ -13,7 +13,7 @@ import {
 import { toast } from "react-hot-toast";
 import "./Card.scss";
 
-const CardComponent = ({ movie, isLiked = false }) => {
+const CardComponent = ({ movie, isLiked = false, onPlayStateChange }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isTrailerActive, setTrailerActive] = useState(false);
@@ -78,19 +78,21 @@ const CardComponent = ({ movie, isLiked = false }) => {
   };
 
   const imageUrl =
-    movie.poster || movie.image || movie.poster_path || movie.backdrop_path;
+    movie.poster_path || movie.backdrop_path || movie.poster || movie.image;
   const movieName = movie.name || movie.title || "Unknown";
+
+  const getImageUrl = (path) => {
+    if (!path) return "https://via.placeholder.com/300x450?text=No+Image";
+    if (path.startsWith("http")) return path;
+    return `https://image.tmdb.org/t/p/w500${path}`;
+  };
 
   return (
     <>
       <Card className="h-100 movie-card">
         <Card.Img
           variant="top"
-          src={
-            imageUrl
-              ? `https://image.tmdb.org/t/p/original${imageUrl}`
-              : "https://via.placeholder.com/300x450?text=No+Image"
-          }
+          src={getImageUrl(imageUrl)}
           alt={movieName}
           className="movie-card__image"
           onError={(e) => {
@@ -153,6 +155,7 @@ const CardComponent = ({ movie, isLiked = false }) => {
           handleModal={handleModal}
           isLiked={isLikedState}
           trailer={movie.trailer}
+          onPlayStateChange={onPlayStateChange}
         />
       )}
     </>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMovies, getGenres } from "../store/Slice/movie-slice";
 import Loader from "../components/Loader/Loader";
@@ -13,6 +13,7 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
   const [loadError, setLoadError] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -52,7 +53,11 @@ const Home = () => {
   if (isLoading || status === "pending") {
     return (
       <div className="home-container">
-        <Navbar />
+        <Navbar
+          isScrolled={false}
+          isGenresActive={false}
+          hideNavbar={isPlaying}
+        />
         <Loader />
       </div>
     );
@@ -62,7 +67,11 @@ const Home = () => {
   if (error || loadError) {
     return (
       <div className="home-container">
-        <Navbar />
+        <Navbar
+          isScrolled={false}
+          isGenresActive={false}
+          hideNavbar={isPlaying}
+        />
         <div className="error-container">
           <h2>Error: {error || loadError}</h2>
           <button onClick={handleRetry}>Retry</button>
@@ -75,7 +84,11 @@ const Home = () => {
   if (!movies || movies.length === 0) {
     return (
       <div className="home-container">
-        <Navbar />
+        <Navbar
+          isScrolled={false}
+          isGenresActive={false}
+          hideNavbar={isPlaying}
+        />
         <div className="no-movies">
           <h2>No movies found</h2>
           <button onClick={handleRetry}>Refresh</button>
@@ -87,7 +100,11 @@ const Home = () => {
   // Show movies grid
   return (
     <div className="home-container">
-      <Navbar />
+      <Navbar
+        isScrolled={false}
+        isGenresActive={false}
+        hideNavbar={isPlaying}
+      />
       <div className="movies-container mt-5">
         {movies.map((movie) => (
           <CardComponent
@@ -95,6 +112,7 @@ const Home = () => {
             movie={movie}
             genres={genres}
             isLiked={false}
+            onPlayStateChange={setIsPlaying}
           />
         ))}
       </div>

@@ -28,7 +28,7 @@ const Movies = () => {
   }, [dispatch, genresLoaded]);
 
   window.onscroll = () => {
-    setIsScrolling(window.pageYOffset === 0 ? false : true);
+    setIsScrolling(window.scrollY === 0 ? false : true);
     return () => (window.onscroll = null);
   };
 

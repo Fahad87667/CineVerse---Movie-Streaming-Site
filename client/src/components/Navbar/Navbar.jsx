@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar, Nav, Container, Form, InputGroup } from "react-bootstrap";
 import { FaSearch, FaBell, FaUser } from "react-icons/fa";
@@ -6,14 +6,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMoviesWithGenre } from "../../store/Slice/movie-slice";
 import SearchMovie from "../SearchMovie/SearchMovie";
 import { logout } from "../../store/Slice/auth-slice";
+import { toast } from "react-hot-toast";
 import "./Navbar.css";
 
-const NavigationBar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+const NavigationBar = ({ isScrolled, isGenresActive, hideNavbar = false }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const links = [
     { name: "Home", path: "/" },
@@ -28,26 +29,27 @@ const NavigationBar = () => {
   const [searchedInput, setSearchedInput] = useState("");
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Regex patterns
+  const searchPattern = /^[a-zA-Z0-9\s\-_.,!?]{1,50}$/;
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const getMoviesWithGenre = (genreId) => {
     dispatch(fetchMoviesWithGenre({ type: "movie", genre: genreId }));
   };
 
   const searchMovieHandler = (e) => {
+    const value = e.target.value;
+
+    // Validate search input
+    if (value && !searchPattern.test(value)) {
+      toast.error(
+        "Search can only contain letters, numbers, and basic punctuation"
+      );
+      return;
+    }
+
     setShowSearchResult(true);
-    setSearchedInput(e.target.value);
+    setSearchedInput(value);
   };
 
   const handleLogout = () => {
@@ -55,14 +57,12 @@ const NavigationBar = () => {
     navigate("/login");
   };
 
+  if (hideNavbar || isPlaying) {
+    return null;
+  }
+
   return (
-    <Navbar
-      bg={isScrolled ? "dark" : "transparent"}
-      variant={isScrolled ? "dark" : "light"}
-      expand="lg"
-      fixed="top"
-      className={`navbar ${isScrolled ? "scrolled" : ""}`}
-    >
+    <Navbar bg="dark" variant="dark" expand="lg" fixed="top" className="navbar">
       <Container fluid className="px-4">
         <Navbar.Brand as={Link} to="/" className="me-4">
           CineVerse
@@ -87,6 +87,9 @@ const NavigationBar = () => {
                 placeholder="Search for a movie, tv show, person..."
                 onChange={searchMovieHandler}
                 className="border-start-0"
+                maxLength={50}
+                pattern={searchPattern.source}
+                title="Only letters, numbers, and basic punctuation allowed"
               />
             </InputGroup>
             <div
@@ -102,7 +105,11 @@ const NavigationBar = () => {
                     </span>
                   </div>
                   <div className="dropdown-divider"></div>
-                  <button id="signout" className="btn dropdown-item" onClick={handleLogout}>
+                  <button
+                    id="signout"
+                    className="btn dropdown-item me-5"
+                    onClick={handleLogout}
+                  >
                     Sign Out
                   </button>
                 </div>
@@ -116,6 +123,7 @@ const NavigationBar = () => {
           showSearchResult={showSearchResult}
           setShowSearchResult={setShowSearchResult}
           searchedInput={searchedInput}
+          onPlayStateChange={setIsPlaying}
         />
       )}
     </Navbar>

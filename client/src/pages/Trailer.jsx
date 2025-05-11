@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BsArrowLeft } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -7,12 +7,14 @@ import ReactPlayer from "react-player";
 import { useDispatch, useSelector } from "react-redux";
 import { getMovieTrailer } from "../store/Slice/movie-slice";
 import { toast } from "react-hot-toast";
+import Navbar from "../components/Navbar/Navbar";
 
 const Trailer = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
   const trailer = useSelector((state) => state.movie.trailer);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     dispatch(getMovieTrailer(location.state.movie));
@@ -25,9 +27,11 @@ const Trailer = () => {
   };
   return (
     <div className="trailer">
-      <div className="trailer__back">
-        <BsArrowLeft onClick={backHandler} />
-      </div>
+      {!isPlaying && (
+        <div className="trailer__back">
+          <BsArrowLeft onClick={backHandler} />
+        </div>
+      )}
       <ReactPlayer
         className="trailer__video"
         url={`https://www.youtube.com/watch?v=${trailer}`}
@@ -37,6 +41,9 @@ const Trailer = () => {
         playing
         controls={true}
         muted={true}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onEnded={() => setIsPlaying(false)}
         onError={(e) => {
           console.log("YouTube player error:", e);
           toast.error(
@@ -52,6 +59,11 @@ const Trailer = () => {
             },
           },
         }}
+      />
+      <Navbar
+        isScrolled={false}
+        isGenresActive={false}
+        hideNavbar={isPlaying}
       />
     </div>
   );

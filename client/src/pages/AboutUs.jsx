@@ -5,7 +5,7 @@ const developers = [
   {
     name: "Fahad Khan",
     role: "Full Stack Developer",
-    img: "https://randomuser.me/api/portraits/men/32.jpg",
+    img: "./src/assets/fahad.jpg",
     description:
       "Specialized in React and Node.js development. Passionate about creating seamless user experiences.",
     skills: ["React", "Node.js", "MongoDB", "Express"],
@@ -13,7 +13,7 @@ const developers = [
   {
     name: "Arpit Sharma",
     role: "Backend Developer",
-    img: "https://randomuser.me/api/portraits/men/45.jpg",
+    img: "./src/assets/arpit.png",
     description:
       "Expert in database design and API development. Focused on building scalable backend solutions.",
     skills: ["Node.js", "MongoDB", "Express", "REST APIs"],
@@ -21,7 +21,7 @@ const developers = [
   {
     name: "Atharva Joshi",
     role: "Frontend Developer",
-    img: "https://randomuser.me/api/portraits/men/65.jpg",
+    img: "./src/assets/atharva.jpg",
     description:
       "UI/UX enthusiast with a keen eye for design. Dedicated to creating beautiful and responsive interfaces.",
     skills: ["React", "SCSS", "JavaScript", "UI/UX"],

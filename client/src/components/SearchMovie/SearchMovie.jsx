@@ -10,6 +10,7 @@ const SearchMovie = ({
   showSearchResult,
   setShowSearchResult,
   searchedInput,
+  onPlayStateChange,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,6 +35,12 @@ const SearchMovie = ({
       replace: true,
       state: { movie },
     });
+  };
+
+  const getImageUrl = (path) => {
+    if (!path) return "https://via.placeholder.com/300x450?text=No+Image";
+    if (path.startsWith("http")) return path;
+    return `https://image.tmdb.org/t/p/w500${path}`;
   };
 
   if (!showSearchResult || !searchedInput) return null;
@@ -77,7 +84,7 @@ const SearchMovie = ({
               }}
             >
               <img
-                src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
+                src={getImageUrl(movie.poster_path)}
                 alt={movie.title || movie.name}
                 style={{
                   width: "100%",
@@ -166,6 +173,7 @@ const SearchMovie = ({
           handleModal={setTrailerActive}
           isLiked={false}
           trailer={selectedMovie.trailer}
+          onPlayStateChange={onPlayStateChange}
         />
       )}
     </div>

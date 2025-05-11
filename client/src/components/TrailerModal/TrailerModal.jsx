@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, Button, Row, Col } from "react-bootstrap";
 import ReactPlayer from "react-player";
 import { IoPlayCircleSharp } from "react-icons/io5";
@@ -10,9 +10,21 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { removeLikedMovie } from "../../store/Slice/movie-slice";
 
-const TrailerModal = ({ movie, handleModal, isLiked, trailer }) => {
+const TrailerModal = ({
+  movie,
+  handleModal,
+  isLiked,
+  trailer,
+  onPlayStateChange,
+}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayStateChange = (playing) => {
+    setIsPlaying(playing);
+    onPlayStateChange?.(playing);
+  };
 
   const addToMovieLikedList = async () => {
     try {
@@ -77,6 +89,9 @@ const TrailerModal = ({ movie, handleModal, isLiked, trailer }) => {
           playing
           controls
           muted
+          onPlay={() => handlePlayStateChange(true)}
+          onPause={() => handlePlayStateChange(false)}
+          onEnded={() => handlePlayStateChange(false)}
           onError={(e) => {
             console.log("YouTube player error:", e);
             toast.error(

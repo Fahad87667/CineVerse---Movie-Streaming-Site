@@ -12,18 +12,18 @@ const developers = [
   },
   {
     name: "Arpit Sharma",
-    role: "Backend Developer",
+    role: "Full Stack Developer",
     img: "./src/assets/arpit.png",
     description:
-      "Expert in database design and API development. Focused on building scalable backend solutions.",
+      "Specialized in React and Node.js development. Passionate about creating seamless user experiences.",
     skills: ["Node.js", "MongoDB", "Express", "REST APIs"],
   },
   {
-    name: "Atharva Joshi",
-    role: "Frontend Developer",
+    name: "Atharva Pawar",
+    role: "Full Stack Developer",
     img: "./src/assets/atharva.jpg",
     description:
-      "UI/UX enthusiast with a keen eye for design. Dedicated to creating beautiful and responsive interfaces.",
+      "Specialized in React and Node.js development. Passionate about creating seamless user experiences.",
     skills: ["React", "SCSS", "JavaScript", "UI/UX"],
   },
 ];

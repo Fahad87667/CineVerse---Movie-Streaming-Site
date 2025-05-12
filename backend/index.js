@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
-// Add a basic route for testing
+// Added a basic route for testing
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend is working!" });
 });
@@ -37,7 +37,7 @@ const connectDB = async () => {
 
     console.log("Connected to MongoDB successfully");
 
-    // Start the server only after successful database connection
+    // Starting the server only after successful database connection
     const PORT = 5000;
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
@@ -49,8 +49,8 @@ const connectDB = async () => {
   }
 };
 
-// Set strictQuery to false to prepare for Mongoose 7
+// Setting strictQuery to false to prepare for Mongoose 7
 mongoose.set("strictQuery", false);
 
-// Initial connection attempt
+// Initialising connection attempt
 connectDB();

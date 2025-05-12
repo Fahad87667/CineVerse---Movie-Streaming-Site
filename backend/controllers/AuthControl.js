@@ -13,10 +13,16 @@ export const register = async (req, res) => {
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
       if (existingUser.email === email) {
-        return res.status(400).json({ message: "Email already exists" });
+        return res.status(400).json({
+          message: "Email already exists",
+          error: true,
+        });
       }
       if (existingUser.username === username) {
-        return res.status(400).json({ message: "Username already exists" });
+        return res.status(400).json({
+          message: "Username already exists",
+          error: true,
+        });
       }
     }
     // Hash password

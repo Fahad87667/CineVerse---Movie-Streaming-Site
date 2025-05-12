@@ -229,7 +229,7 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
-        toast.error(action.payload);
+        toast.error(action.payload || "Registration failed. Please try again.");
       });
   },
 });

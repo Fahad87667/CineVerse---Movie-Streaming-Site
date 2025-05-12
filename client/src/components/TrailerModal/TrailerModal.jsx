@@ -79,6 +79,7 @@ const TrailerModal = ({
   };
 
   const handleLike = () => {
+    toast.success("Movie added to your list");
     setIsLikedState(true);
     setIsDisliked(false);
   };

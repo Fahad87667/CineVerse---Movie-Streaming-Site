@@ -38,7 +38,8 @@ const Login = () => {
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!emailPattern.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+      newErrors.email =
+        "Please enter a valid email address (e.g., example@gmail.com)";
     }
 
     // Password validation

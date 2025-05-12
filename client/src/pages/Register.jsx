@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import { register, clearError } from "../store/Slice/auth-slice";
+import { toast } from "react-hot-toast";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -10,10 +11,14 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [validated, setValidated] = useState(false);
   const [username, setUsername] = useState("");
+  const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, status, error } = useSelector((state) => state.auth);
+
+  // Regex patterns
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   useEffect(() => {
     if (user) {
@@ -24,22 +29,58 @@ const Register = () => {
     };
   }, [user, navigate, dispatch]);
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Email validation
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!emailPattern.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Username validation
+    if (!username) {
+      newErrors.username = "Username is required";
+    } else if (username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters long";
+    }
+
+    // Password validation
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long";
+    }
+
+    // Confirm password validation
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const form = event.currentTarget;
+    setValidated(true);
 
-    if (form.checkValidity() === false) {
-      event.stopPropagation();
-      setValidated(true);
+    if (!validateForm()) {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setValidated(true);
-      return;
+    try {
+      await dispatch(register({ username, email, password })).unwrap();
+      toast.success("Registration successful!");
+      navigate("/");
+    } catch (error) {
+      // Error is already handled by the auth slice
+      console.error("Registration error:", error);
+      toast.error("Registration failed");
     }
-
-    dispatch(register({ username, email, password }));
   };
 
   return (
@@ -57,11 +98,12 @@ const Register = () => {
                   placeholder="Enter username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  isInvalid={!!errors.username}
                   required
                   minLength={3}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Please enter a valid username (at least 3 characters).
+                  {errors.username}
                 </Form.Control.Feedback>
               </Form.Group>
 
@@ -72,10 +114,11 @@ const Register = () => {
                   placeholder="Enter email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  isInvalid={!!errors.email}
                   required
                 />
                 <Form.Control.Feedback type="invalid">
-                  Please enter a valid email address.
+                  {errors.email}
                 </Form.Control.Feedback>
               </Form.Group>
 
@@ -86,11 +129,12 @@ const Register = () => {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  isInvalid={!!errors.password}
                   required
                   minLength={6}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Password must be at least 6 characters long.
+                  {errors.password}
                 </Form.Control.Feedback>
               </Form.Group>
 
@@ -101,11 +145,11 @@ const Register = () => {
                   placeholder="Confirm Password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  isInvalid={!!errors.confirmPassword}
                   required
-                  isInvalid={validated && password !== confirmPassword}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Passwords do not match.
+                  {errors.confirmPassword}
                 </Form.Control.Feedback>
               </Form.Group>
 

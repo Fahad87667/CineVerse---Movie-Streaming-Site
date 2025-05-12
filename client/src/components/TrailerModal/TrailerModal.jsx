@@ -7,8 +7,11 @@ import { RiThumbUpFill, RiThumbDownFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { removeLikedMovie } from "../../store/Slice/movie-slice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  removeLikedMovie,
+  addToLikedMovies,
+} from "../../store/Slice/movie-slice";
 
 const TrailerModal = ({
   movie,
@@ -20,6 +23,9 @@ const TrailerModal = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLikedState, setIsLikedState] = useState(isLiked);
+  const [isDisliked, setIsDisliked] = useState(false);
+  const { user } = useSelector((state) => state.auth);
 
   const handlePlayStateChange = (playing) => {
     setIsPlaying(playing);
@@ -27,38 +33,76 @@ const TrailerModal = ({
   };
 
   const addToMovieLikedList = async () => {
+    if (!user) {
+      toast.error("Please login to add movies to your list");
+      navigate("/login");
+      return;
+    }
+
     try {
-      await axios.post("https://mern-movie-project.vercel.app/api/users/add", {
-        movie: movie,
-      });
-      toast("Movie added to your list", {
-        icon: "👌",
-        style: {
-          background: "#333",
-          color: "#fff",
-        },
-      });
+      const movieData = {
+        id: movie.id,
+        name: movie.name || movie.title || "Unknown",
+        image: movie.image || movie.backdrop_path,
+        poster: movie.poster || movie.poster_path,
+        genres: movie.genres || [],
+      };
+
+      await dispatch(
+        addToLikedMovies({ email: user.email, movie: movieData })
+      ).unwrap();
+      setIsLikedState(true);
+      toast.success("Movie added to your list");
     } catch (err) {
-      toast(err.message, {
-        icon: "❌",
-        style: {
-          background: "#333",
-          color: "#fff",
-        },
-      });
+      toast.error(err.message || "Failed to add movie to your list");
       console.log(err);
     }
   };
 
-  const removeFromMovieLikedList = () => {
-    dispatch(removeLikedMovie({ movie: movie }));
-    toast("Movie removed from your list", {
-      icon: "👌",
-      style: {
-        background: "#333",
-        color: "#fff",
-      },
-    });
+  const removeFromMovieLikedList = async () => {
+    if (!user) {
+      toast.error("Please login to remove movies from your list");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await dispatch(
+        removeLikedMovie({ email: user.email, movieId: movie.id })
+      ).unwrap();
+      setIsLikedState(false);
+      toast.success("Movie removed from your list");
+    } catch (err) {
+      toast.error(err.message || "Failed to remove movie from your list");
+      console.log(err);
+    }
+  };
+
+  const handleLike = () => {
+    setIsLikedState(true);
+    setIsDisliked(false);
+  };
+
+  const handleDislike = async () => {
+    if (!user) {
+      toast.error("Please login to dislike movies");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      if (isLikedState) {
+        await dispatch(
+          removeLikedMovie({ email: user.email, movieId: movie.id })
+        ).unwrap();
+        setIsLikedState(false);
+        toast.success("Movie removed from your list");
+      }
+      setIsDisliked(true);
+    } catch (err) {
+      toast.error(err.message || "Failed to remove movie from your list");
+      console.log(err);
+    }
   };
 
   const playTrailer = () => {
@@ -74,40 +118,25 @@ const TrailerModal = ({
     <Modal
       show={true}
       onHide={() => handleModal(false)}
-      size="xl"
+      size="lg"
       centered
       className="trailer-modal"
     >
       <Modal.Header closeButton className="bg-dark text-white">
-        <Modal.Title>{movie.name}</Modal.Title>
+        <Modal.Title>{movie.name || movie.title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white p-0">
-        <ReactPlayer
-          url={`https://www.youtube.com/watch?v=${trailer}`}
-          width="100%"
-          height="500px"
-          playing
-          controls
-          muted
-          onPlay={() => handlePlayStateChange(true)}
-          onPause={() => handlePlayStateChange(false)}
-          onEnded={() => handlePlayStateChange(false)}
-          onError={(e) => {
-            console.log("YouTube player error:", e);
-            toast.error(
-              "Failed to load video. This might be due to an ad blocker."
-            );
-          }}
-          config={{
-            youtube: {
-              playerVars: {
-                origin: window.location.origin,
-                modestbranding: 1,
-                rel: 0,
-              },
-            },
-          }}
-        />
+        <div className="ratio ratio-16x9">
+          <ReactPlayer
+            url={trailer}
+            width="100%"
+            height="100%"
+            playing={isPlaying}
+            controls={true}
+            onPlay={handlePlayStateChange}
+            onPause={handlePlayStateChange}
+          />
+        </div>
         <div className="p-4">
           <Row className="mb-4">
             <Col>
@@ -116,15 +145,21 @@ const TrailerModal = ({
                   <IoPlayCircleSharp className="me-2" />
                   Play
                 </Button>
-                <Button variant="outline-light">
+                <Button
+                  variant={isLikedState ? "light" : "outline-light"}
+                  onClick={handleLike}
+                >
                   <RiThumbUpFill className="me-2" />
                   Like
                 </Button>
-                <Button variant="outline-light">
+                <Button
+                  variant={isDisliked ? "light" : "outline-light"}
+                  onClick={handleDislike}
+                >
                   <RiThumbDownFill className="me-2" />
                   Dislike
                 </Button>
-                {isLiked ? (
+                {isLikedState ? (
                   <Button
                     variant="outline-light"
                     onClick={removeFromMovieLikedList}

@@ -21,6 +21,8 @@
   "author": "Fahad, Arpit, Atharva",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "formik": "^2.4.6",
+    "yup": "^1.6.1"
   }
 }

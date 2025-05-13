@@ -116,3 +116,72 @@ export const removeFromLikedMovies = async (req, res) => {
       .json({ message: "Something went wrong", error: err.message });
   }
 };
+
+export const updateUserProfile = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const { username, email } = req.body;
+
+    console.log("Updating profile for user:", userId);
+    console.log("Update data:", { username, email });
+
+    // Validate input
+    if (!username && !email) {
+      console.log("No fields provided for update");
+      return res
+        .status(400)
+        .json({ message: "At least one field is required to update" });
+    }
+
+    // Check if username or email already exists (if being updated)
+    if (username || email) {
+      const existingUser = await User.findOne({
+        $or: [
+          ...(username ? [{ username }] : []),
+          ...(email ? [{ email }] : []),
+        ],
+        _id: { $ne: userId },
+      });
+
+      if (existingUser) {
+        console.log(
+          "Found existing user with same username/email:",
+          existingUser._id
+        );
+        if (existingUser.username === username) {
+          return res.status(400).json({ message: "Username already exists" });
+        }
+        if (existingUser.email === email) {
+          return res.status(400).json({ message: "Email already exists" });
+        }
+      }
+    }
+
+    // Update user profile
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        ...(username && { username }),
+        ...(email && { email }),
+      },
+      { new: true, select: "-password" }
+    );
+
+    if (!updatedUser) {
+      console.log("User not found:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log("Profile updated successfully for user:", userId);
+    res.json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({
+      message: "Error updating profile",
+      error: error.message,
+    });
+  }
+};

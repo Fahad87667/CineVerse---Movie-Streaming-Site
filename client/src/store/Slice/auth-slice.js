@@ -30,7 +30,7 @@ api.interceptors.response.use(
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/login";
-      toast.error("Session expired. Please login again.");
+      toast.error("Your session has expired. Please login again.");
     }
     return Promise.reject(error);
   }
@@ -65,7 +65,7 @@ export const verifyToken = createAsyncThunk(
     } catch (error) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      return rejectWithValue("Session expired. Please login again.");
+      return rejectWithValue("Authentication failed");
     }
   }
 );
@@ -142,6 +142,40 @@ export const register = createAsyncThunk(
   }
 );
 
+// Update profile
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async ({ username, email }, { rejectWithValue }) => {
+    try {
+      if (!username && !email) {
+        throw new Error("At least one field is required to update");
+      }
+      const response = await api.put("/users/profile", {
+        username,
+        email,
+      });
+      if (!response.data.user) {
+        throw new Error("Invalid response from server");
+      }
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      return response.data;
+    } catch (error) {
+      if (error.code === "ECONNABORTED") {
+        return rejectWithValue(
+          "Connection timeout. Please check if the server is running."
+        );
+      }
+      if (!error.response) {
+        return rejectWithValue("Network error. Please check your connection.");
+      }
+      return rejectWithValue(
+        error.response?.data?.message ||
+          "Failed to update profile. Please try again."
+      );
+    }
+  }
+);
+
 const initialState = {
   user: getUserFromStorage(),
   token: localStorage.getItem("token"),
@@ -187,7 +221,6 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
-        toast.error(action.payload);
       })
       // Login
       .addCase(login.pending, (state) => {
@@ -200,7 +233,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.error = null;
-        toast.success("Logged in successfully");
+        toast.success("Welcome back! You've been logged in successfully.");
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -208,7 +241,9 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
-        toast.error(action.payload);
+        toast.error(
+          action.payload || "Login failed. Please check your credentials."
+        );
       })
       // Register
       .addCase(register.pending, (state) => {
@@ -221,7 +256,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.error = null;
-        toast.success("Registered successfully");
+        toast.success("Account created successfully! Welcome aboard.");
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
@@ -230,6 +265,24 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         toast.error(action.payload || "Registration failed. Please try again.");
+      })
+      // Update Profile
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.error = null;
+        toast.success("Your profile has been updated successfully.");
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(
+          action.payload || "Failed to update profile. Please try again."
+        );
       });
   },
 });

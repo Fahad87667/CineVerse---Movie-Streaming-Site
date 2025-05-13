@@ -9,6 +9,7 @@ import MyList from "../pages/MyList";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import AboutUs from "../pages/AboutUs";
+import Profile from "../pages/Profile";
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useSelector((state) => state.auth);
@@ -28,6 +29,14 @@ const createRoutes = () => (
       element={
         <ProtectedRoute>
           <Home />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/profile"
+      element={
+        <ProtectedRoute>
+          <Profile />
         </ProtectedRoute>
       }
     />

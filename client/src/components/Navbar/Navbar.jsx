@@ -7,7 +7,7 @@ import { fetchMoviesWithGenre } from "../../store/Slice/movie-slice";
 import SearchMovie from "../SearchMovie/SearchMovie";
 import { logout } from "../../store/Slice/auth-slice";
 import { toast } from "react-hot-toast";
-import "./Navbar.css";
+import "./Navbar.scss";
 
 const NavigationBar = ({ isScrolled, isGenresActive, hideNavbar = false }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -105,13 +105,25 @@ const NavigationBar = ({ isScrolled, isGenresActive, hideNavbar = false }) => {
                     </span>
                   </div>
                   <div className="dropdown-divider"></div>
-                  <button
-                    id="signout"
-                    className="btn dropdown-item me-5"
-                    onClick={handleLogout}
-                  >
-                    Sign Out
-                  </button>
+                  <div className="user-menu">
+                    <div className="user-menu-item">
+                      <Link
+                        to="/profile"
+                        className="text-decoration-none text-white"
+                      >
+                        <FaUser className="me-2" />
+                        Profile
+                      </Link>
+                    </div>
+                    <div className="user-menu-item">
+                      <button
+                        className="btn btn-link text-decoration-none text-white p-0"
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

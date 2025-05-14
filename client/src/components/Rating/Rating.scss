@@ -1,0 +1,14 @@
+.rating-container {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+
+  .star {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}

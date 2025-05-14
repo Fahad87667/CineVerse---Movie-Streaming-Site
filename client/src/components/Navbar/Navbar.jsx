@@ -21,7 +21,7 @@ const NavigationBar = ({ isScrolled, isGenresActive, hideNavbar = false }) => {
     { name: "TV Shows", path: "/tv-shows" },
     { name: "Movies", path: "/movies" },
     { name: "New & Popular", path: "/new-popular" },
-    { name: "My List", path: "/my-list" },
+    ...(user ? [{ name: "My List", path: "/my-list" }] : []),
     { name: "About Us", path: "/about" },
   ];
 
@@ -92,41 +92,47 @@ const NavigationBar = ({ isScrolled, isGenresActive, hideNavbar = false }) => {
                 title="Only letters, numbers, and basic punctuation allowed"
               />
             </InputGroup>
-            <div
-              className="user-menu"
-              onClick={() => setShowUserMenu(!showUserMenu)}
-            >
-              <FaUser className="icon" />
-              {showUserMenu && (
-                <div className="user-dropdown">
-                  <div className="user-info">
-                    <span className="user-name">
-                      {user?.username || user?.name || user?.email}
-                    </span>
-                  </div>
-                  <div className="dropdown-divider"></div>
-                  <div className="user-menu">
-                    <div className="user-menu-item">
-                      <Link
-                        to="/profile"
-                        className="text-decoration-none text-white"
-                      >
-                        <FaUser className="me-2" />
-                        Profile
-                      </Link>
+            {user ? (
+              <div
+                className="user-menu"
+                onClick={() => setShowUserMenu(!showUserMenu)}
+              >
+                <FaUser className="icon" />
+                {showUserMenu && (
+                  <div className="user-dropdown">
+                    <div className="user-info">
+                      <span className="user-name">
+                        {user?.username || user?.name || user?.email}
+                      </span>
                     </div>
-                    <div className="user-menu-item">
-                      <button
-                        className="btn btn-link text-decoration-none text-white p-0"
-                        onClick={handleLogout}
-                      >
-                        Logout
-                      </button>
+                    <div className="dropdown-divider"></div>
+                    <div className="user-menu">
+                      <div className="user-menu-item">
+                        <Link
+                          to="/profile"
+                          className="text-decoration-none text-white"
+                        >
+                          <FaUser className="me-2" />
+                          Profile
+                        </Link>
+                      </div>
+                      <div className="user-menu-item">
+                        <button
+                          className="btn btn-link text-decoration-none text-white p-0"
+                          onClick={handleLogout}
+                        >
+                          Logout
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="btn btn-primary ms-2">
+                Login
+              </Link>
+            )}
           </div>
         </Navbar.Collapse>
       </Container>

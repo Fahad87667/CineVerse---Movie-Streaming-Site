@@ -96,3 +96,25 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Error logging in" });
   }
 };
+
+// Verify token and return user info
+export const verifyToken = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "your_jwt_secret_key"
+    );
+    const user = await User.findById(decoded.userId).select("-password");
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    res.json({ user });
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+};

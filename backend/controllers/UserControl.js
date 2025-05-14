@@ -185,3 +185,169 @@ export const updateUserProfile = async (req, res) => {
     });
   }
 };
+
+export const rateMovie = async (req, res) => {
+  try {
+    const { email, movie, rating } = req.body;
+    console.log("Rating movie:", { email, movie, rating });
+
+    if (!email || !movie || !rating) {
+      console.log("Missing required data");
+      return res
+        .status(400)
+        .json({ message: "Email, movie, and rating are required" });
+    }
+
+    if (rating < 1 || rating > 5) {
+      return res
+        .status(400)
+        .json({ message: "Rating must be between 1 and 5" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log("User not found");
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const ratedMovie = {
+      movieId: movie.id,
+      rating,
+      name: movie.name || movie.title,
+      image: movie.image || movie.backdrop_path,
+      poster: movie.poster || movie.poster_path,
+      genres: movie.genres || [],
+    };
+
+    // Check if movie is already rated
+    const existingRatingIndex = user.ratedMovies.findIndex(
+      (m) => m.movieId === movie.id
+    );
+
+    if (existingRatingIndex !== -1) {
+      // Update existing rating
+      user.ratedMovies[existingRatingIndex] = ratedMovie;
+    } else {
+      // Add new rating
+      user.ratedMovies.push(ratedMovie);
+    }
+
+    await user.save();
+    console.log("Movie rated successfully");
+    return res.status(200).json({
+      message: "Movie rated successfully",
+      user: user,
+    });
+  } catch (err) {
+    console.error("Error in rateMovie:", err);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", error: err.message });
+  }
+};
+
+export const getRatedMovies = async (req, res) => {
+  try {
+    const { email } = req.params;
+    console.log("=== Get Rated Movies Debug ===");
+    console.log("Request params:", req.params);
+    console.log("Email from params:", email);
+
+    if (!email) {
+      console.log("Email is missing");
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+    console.log(
+      "User found:",
+      user
+        ? {
+            email: user.email,
+            ratedMoviesCount: user.ratedMovies.length,
+            ratedMovies: user.ratedMovies,
+          }
+        : "No user found"
+    );
+
+    if (user) {
+      console.log("Sending response with rated movies:", user.ratedMovies);
+      return res
+        .status(200)
+        .json({ message: "Success", movies: user.ratedMovies });
+    }
+    console.log("User not found");
+    return res.status(404).json({ message: "User not found" });
+  } catch (err) {
+    console.error("Error in getRatedMovies:", err);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", error: err.message });
+  }
+};
+
+export const removeRating = async (req, res) => {
+  try {
+    const { email, movieId } = req.body;
+    console.log("Removing movie rating:", { email, movieId });
+
+    if (!email || !movieId) {
+      console.log("Missing email or movieId");
+      return res
+        .status(400)
+        .json({ message: "Email and movieId are required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log("User not found");
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.ratedMovies = user.ratedMovies.filter(
+      (movie) => movie.movieId !== movieId
+    );
+
+    await user.save();
+    console.log("Rating removed successfully");
+    return res.status(200).json({
+      message: "Rating removed successfully",
+      user: user,
+    });
+  } catch (err) {
+    console.error("Error in removeRating:", err);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", error: err.message });
+  }
+};
+
+export const getAverageMovieRating = async (req, res) => {
+  try {
+    const { movieId } = req.params;
+    if (!movieId) {
+      return res.status(400).json({ message: "movieId is required" });
+    }
+    // Find all users who have rated this movie
+    const users = await User.find({ "ratedMovies.movieId": Number(movieId) });
+    let total = 0;
+    let count = 0;
+    users.forEach((user) => {
+      user.ratedMovies.forEach((rm) => {
+        if (rm.movieId === Number(movieId)) {
+          total += rm.rating;
+          count++;
+        }
+      });
+    });
+    const average = count > 0 ? total / count : 0;
+    res.json({ movieId: Number(movieId), averageRating: average, count });
+  } catch (err) {
+    res
+      .status(500)
+      .json({
+        message: "Error calculating average rating",
+        error: err.message,
+      });
+  }
+};

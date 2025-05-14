@@ -139,6 +139,42 @@ export const getMovieTrailer = createAsyncThunk(
   }
 );
 
+export const getSimilarMovies = createAsyncThunk(
+  "movie/getSimilarMovies",
+  async (movieId, { getState }) => {
+    try {
+      const {
+        movie: { genres },
+      } = getState();
+      if (!genres || !Array.isArray(genres)) {
+        throw new Error("Genres not loaded");
+      }
+
+      const { data } = await axios.get(
+        `${TMDB_BASE_URL}/movie/${movieId}/similar?api_key=${API_KEY}`
+      );
+
+      const similarMovies = data.results.map((movie) => ({
+        id: movie.id,
+        name: movie.title,
+        image: movie.backdrop_path,
+        poster: movie.poster_path,
+        genres: movie.genre_ids
+          .map((id) => genres.find((g) => g.id === id)?.name)
+          .filter(Boolean),
+        rating: movie.vote_average,
+      }));
+
+      return similarMovies;
+    } catch (error) {
+      console.error("Error fetching similar movies:", error);
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch similar movies"
+      );
+    }
+  }
+);
+
 export const fetchMoviesWithGenre = createAsyncThunk(
   "movie/fetchMoviesWithGenre",
   async ({ genre, type }, { getState }) => {
@@ -229,6 +265,57 @@ export const removeLikedMovie = createAsyncThunk(
   }
 );
 
+export const rateMovie = createAsyncThunk(
+  "movie/rateMovie",
+  async ({ email, movie, rating }, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/users/rate", {
+        email,
+        movie,
+        rating,
+      });
+      return response.data.user.ratedMovies;
+    } catch (error) {
+      console.error("Error rating movie:", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to rate movie"
+      );
+    }
+  }
+);
+
+export const getUserRatedMovies = createAsyncThunk(
+  "movie/getUserRatedMovies",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/users/rated/${email}`);
+      return response.data.movies;
+    } catch (error) {
+      console.error("Error fetching rated movies:", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch rated movies"
+      );
+    }
+  }
+);
+
+export const removeMovieRating = createAsyncThunk(
+  "movie/removeMovieRating",
+  async ({ email, movieId }, { rejectWithValue }) => {
+    try {
+      const response = await api.delete("/users/rating", {
+        data: { email, movieId },
+      });
+      return response.data.user.ratedMovies;
+    } catch (error) {
+      console.error("Error removing movie rating:", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to remove movie rating"
+      );
+    }
+  }
+);
+
 const initialState = {
   movies: [],
   genres: [],
@@ -236,6 +323,7 @@ const initialState = {
   status: "idle",
   error: null,
   likedMovies: [],
+  ratedMovies: [],
   searchedMovies: [],
 };
 
@@ -286,6 +374,10 @@ const movieSlice = createSlice({
       // Get Movie Trailer
       .addCase(getMovieTrailer.fulfilled, (state, action) => {
         state.trailer = action.payload;
+      })
+      // Get Similar Movies
+      .addCase(getSimilarMovies.fulfilled, (state, action) => {
+        state.similarMovies = action.payload;
       })
       // Fetch Movies with Genre
       .addCase(fetchMoviesWithGenre.pending, (state) => {
@@ -354,6 +446,48 @@ const movieSlice = createSlice({
         state.error = null;
       })
       .addCase(removeLikedMovie.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Rate Movie
+      .addCase(rateMovie.pending, (state) => {
+        state.status = "pending";
+        state.error = null;
+      })
+      .addCase(rateMovie.fulfilled, (state, action) => {
+        state.ratedMovies = action.payload;
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(rateMovie.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Get User Rated Movies
+      .addCase(getUserRatedMovies.pending, (state) => {
+        state.status = "pending";
+        state.error = null;
+      })
+      .addCase(getUserRatedMovies.fulfilled, (state, action) => {
+        state.ratedMovies = action.payload;
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(getUserRatedMovies.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Remove Movie Rating
+      .addCase(removeMovieRating.pending, (state) => {
+        state.status = "pending";
+        state.error = null;
+      })
+      .addCase(removeMovieRating.fulfilled, (state, action) => {
+        state.ratedMovies = action.payload;
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(removeMovieRating.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

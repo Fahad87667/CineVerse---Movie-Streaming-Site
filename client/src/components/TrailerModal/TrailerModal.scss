@@ -1,150 +1,250 @@
-.overlay{
+.overlay {
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 99;
+  transition: all 0.3s ease-in-out;
+
+  &--layer {
     width: 100%;
     height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
     z-index: 99;
-    transition: all 0.3s ease-in-out;
-    
-    &--layer{
-        width: 100%;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, 0.8);
+    left: 50%;
+    top: 50%;
+    background-color: #18191a;
+    border: 1px solid #212121;
+    transform: translate(-50%, -50%);
+    color: white;
+    max-width: 800px;
+    &--video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
-    &__content{
+    &--info {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-top: 1rem;
+
+      &--icons {
         display: flex;
-        flex-direction: column;
-        justify-content: center;
         align-items: center;
-        position: absolute;
-        z-index: 99;
-        left: 50%;
-        top: 50%;
-        background-color: #18191A;
-        border: 1px solid #212121;
-        transform: translate(-50%,-50%);
-        color: white;   
-        max-width: 800px;
-        &--video{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        gap: 1rem;
+        box-sizing: border-box;
+        padding: 0 0 0 20px;
+        svg {
+          font-size: 1.5rem;
+          cursor: pointer;
+          &:hover {
+            color: #f34242;
+          }
         }
-
-        &--info{
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-top: 1rem;
-
-            &--icons{
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-                box-sizing: border-box;
-                padding: 0 0 0 20px;
-                svg{
-                    font-size: 1.5rem;
-                    cursor: pointer;
-                    &:hover{
-                        color: #f34242;
-                    }
-                }
-            }
-            &--descr{
-                width: 100%;
-                box-sizing: border-box;
-                padding: 0 0 20px 20px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-                &--text{
-                    width: 65%;
-                    color: white;
-                    padding-right: 1.5rem;
-                    h3{
-                        color: #545353;
-                    }
-                    p{
-                        margin-bottom: 1rem;
-                        text-align: justify;
-                    }
-                }
-                &--content{
-                    width: 35%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-
-                    ul{
-                        list-style: none;
-                        padding: 0;
-                        margin: 0;
-                        li{
-                            margin-bottom: 0.9rem;
-                            color: #545353;
-                            font-weight: 600;
-                            font-size: 0.9rem;
-                            
-                            &:last-child{
-                                margin-bottom: 0;
-                            }
-                            span{
-                                font-size: 0.9rem;
-                                color: #fff;
-                                font-weight: 600;
-                                padding: 0 5px;
-                            }
-                        }
-                    }
-                }
-            }
+      }
+      &--descr {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 0 20px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+        &--text {
+          width: 65%;
+          color: white;
+          padding-right: 1.5rem;
+          h3 {
+            color: #545353;
+          }
+          p {
+            margin-bottom: 1rem;
+            text-align: justify;
+          }
         }
-    }
-}
+        &--content {
+          width: 35%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
 
-.likedMovie{
-    svg{
-     color: #f34242;   
-    }
-}
+          ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            li {
+              margin-bottom: 0.9rem;
+              color: #545353;
+              font-weight: 600;
+              font-size: 0.9rem;
 
-@media screen and (max-width: 768px){
-    .overlay{
-        &__content{
-            width: 80%;
-            height: 70%;
-            &--video{
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
+              &:last-child {
+                margin-bottom: 0;
+              }
+              span {
+                font-size: 0.9rem;
+                color: #fff;
+                font-weight: 600;
+                padding: 0 5px;
+              }
             }
+          }
+        }
+      }
     }
+  }
 }
+
+.likedMovie {
+  svg {
+    color: #f34242;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .overlay {
+    &__content {
+      width: 80%;
+      height: 70%;
+      &--video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
 }
 
 @media screen and (max-width: 480px) {
-    .overlay{
-        &__content{
-            width: 90%;
-            height: fit-content;
-            &--video{
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
+  .overlay {
+    &__content {
+      width: 90%;
+      height: fit-content;
+      &--video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-            &--info{
-                margin: 0;
-                padding: 1rem;
-                &--descr{
-                    display: none;
-                }
-            }
+      &--info {
+        margin: 0;
+        padding: 1rem;
+        &--descr {
+          display: none;
+        }
+      }
     }
+  }
 }
+
+.trailer-modal {
+  .modal-content {
+    background-color: #141414;
+    border: none;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid #2f2f2f;
+  }
+
+  .movie-poster {
+    width: 100%;
+    height: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  .movie-details {
+    p {
+      margin-bottom: 0.5rem;
+      color: #e5e5e5;
+    }
+
+    strong {
+      color: #fff;
+      margin-right: 0.5rem;
+    }
+  }
+
+  .similar-movies {
+    border-top: 1px solid #2f2f2f;
+    padding-top: 1.5rem;
+
+    h5 {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .similar-movie-card {
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+
+      &:hover {
+        transform: scale(1.05);
+        z-index: 1;
+
+        .similar-movie-info {
+          opacity: 1;
+        }
+      }
+
+      img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .similar-movie-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+        padding: 1rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+
+        h6 {
+          color: #fff;
+          margin: 0 0 0.5rem 0;
+          font-size: 0.9rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .rating {
+          color: #ffc107;
+          font-size: 0.8rem;
+        }
+
+        .rating-value {
+          color: #fff;
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+      }
+    }
+  }
 }

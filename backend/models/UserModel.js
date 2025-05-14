@@ -27,6 +27,39 @@ const movieSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const ratedMovieSchema = new mongoose.Schema(
+  {
+    movieId: {
+      type: Number,
+      required: true,
+    },
+    rating: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 5,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    poster: {
+      type: String,
+      required: true,
+    },
+    genres: [
+      {
+        type: String,
+      },
+    ],
+  },
+  { _id: false }
+);
+
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -47,6 +80,7 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     likedMovies: [movieSchema],
+    ratedMovies: [ratedMovieSchema],
   },
   {
     timestamps: true,

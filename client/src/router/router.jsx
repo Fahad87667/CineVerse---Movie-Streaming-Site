@@ -24,11 +24,16 @@ const createRoutes = () => (
     <Route path="/login" element={<Login />} />
     <Route path="/register" element={<Register />} />
     <Route path="/about" element={<AboutUs />} />
+    <Route path="/" element={<Home />} />
+    <Route path="/trailer" element={<Trailer />} />
+    <Route path="/movies" element={<Movies />} />
+    <Route path="/tv-shows" element={<TvShows />} />
+    <Route path="/new-popular" element={<NewPopular />} />
     <Route
-      path="/"
+      path="/my-list"
       element={
         <ProtectedRoute>
-          <Home />
+          <MyList />
         </ProtectedRoute>
       }
     />
@@ -37,46 +42,6 @@ const createRoutes = () => (
       element={
         <ProtectedRoute>
           <Profile />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/trailer"
-      element={
-        <ProtectedRoute>
-          <Trailer />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/movies"
-      element={
-        <ProtectedRoute>
-          <Movies />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/tv-shows"
-      element={
-        <ProtectedRoute>
-          <TvShows />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/new-popular"
-      element={
-        <ProtectedRoute>
-          <NewPopular />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/my-list"
-      element={
-        <ProtectedRoute>
-          <MyList />
         </ProtectedRoute>
       }
     />

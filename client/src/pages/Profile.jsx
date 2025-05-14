@@ -38,9 +38,12 @@ const Profile = () => {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      await dispatch(updateProfile(values)).unwrap();
-      navigate("/");
+      console.log("Starting profile update with values:", values);
+      const result = await dispatch(updateProfile(values)).unwrap();
+      console.log("Profile update successful:", result);
+      navigate("/", { replace: true });
     } catch (error) {
+      console.error("Profile update error:", error);
       toast.error(error.message || "Failed to update profile");
     } finally {
       setSubmitting(false);

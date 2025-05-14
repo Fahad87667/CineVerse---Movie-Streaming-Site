@@ -147,6 +147,7 @@ export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
   async ({ username, email }, { rejectWithValue }) => {
     try {
+      console.log("updateProfile thunk called with:", { username, email });
       if (!username && !email) {
         throw new Error("At least one field is required to update");
       }
@@ -154,12 +155,14 @@ export const updateProfile = createAsyncThunk(
         username,
         email,
       });
+      console.log("Update profile API response:", response.data);
       if (!response.data.user) {
         throw new Error("Invalid response from server");
       }
       localStorage.setItem("user", JSON.stringify(response.data.user));
       return response.data;
     } catch (error) {
+      console.error("Update profile error:", error);
       if (error.code === "ECONNABORTED") {
         return rejectWithValue(
           "Connection timeout. Please check if the server is running."

@@ -31,7 +31,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      {isAuthenticated && <NavigationBar />}
+      <NavigationBar />
       <Toaster position="top-center" reverseOrder={false} />
       {createRoutes()}
       <Footer />
